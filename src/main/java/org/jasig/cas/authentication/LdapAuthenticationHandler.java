@@ -281,31 +281,48 @@ public class LdapAuthenticationHandler extends AbstractUsernamePasswordAuthentic
         final String id;
 
         /*
-         * if (this.principalIdAttribute != null) { final LdapAttribute
-         * principalAttr = ldapEntry.getAttribute(this.principalIdAttribute); if
-         * (principalAttr == null || principalAttr.size() == 0) { throw new
-         * LoginException(this.principalIdAttribute +
-         * " attribute not found for " + username); } if (principalAttr.size() >
-         * 1) { if (this.allowMultiplePrincipalAttributeValues) {logger.warn(
-         * "Found multiple values for principal ID attribute: {}. Using first value={}."
-         * , principalAttr, principalAttr.getStringValue()); } else { throw new
-         * LoginException("Multiple principal values not allowed: " +
-         * principalAttr); } } id = principalAttr.getStringValue();
-         * logger.info("id from principalAttr.getStringValue===>" + id); } else
-         * { id = username; } final Map<String, Object> attributeMap = new
-         * LinkedHashMap<String, Object>(this.principalAttributeMap.size()); for
-         * (String ldapAttrName : this.principalAttributeMap.keySet()) { final
-         * LdapAttribute attr = ldapEntry.getAttribute(ldapAttrName); if (attr
-         * != null) { logger.debug("Found principal attribute: {}", attr); final
-         * String principalAttrName =
-         * this.principalAttributeMap.get(ldapAttrName); if (attr.size() > 1) {
-         * attributeMap.put(principalAttrName, attr.getStringValues()); } else {
-         * attributeMap.put(principalAttrName, attr.getStringValue()); } } }
-         */
+        if (this.principalIdAttribute != null) {
+            final LdapAttribute principalAttr = ldapEntry.getAttribute(this.principalIdAttribute);
+            if (principalAttr == null || principalAttr.size() == 0) {
+                throw new LoginException(this.principalIdAttribute + " attribute not found for " + username);
+            }
+            if (principalAttr.size() > 1) {
+                if (this.allowMultiplePrincipalAttributeValues) {
+                    logger.warn("Found multiple values for principal ID attribute: {}. Using first value={}.",
+                            principalAttr, principalAttr.getStringValue());
+                } else {
+                    throw new LoginException("Multiple principal values not allowed: " + principalAttr);
+                }
+            }
+            id = principalAttr.getStringValue();
+            logger.info("id from principalAttr.getStringValue===>" + id);
+        } else {
+            id = username;
+        }
+        */
 
-        logger.info("return SimplePrincipal.....");
-        return new SimplePrincipal(username);
-        // return new SimplePrincipal(id, attributeMap);
+        // final Map<String, Object> attributeMap = new LinkedHashMap<String,
+        // Object>(this.principalAttributeMap.size());
+        
+        final Map<String, Object> attributeMap = new LinkedHashMap<String, Object>(10);
+        /*
+        for (String ldapAttrName : this.principalAttributeMap.keySet()) {
+            final LdapAttribute attr = ldapEntry.getAttribute(ldapAttrName);
+            if (attr != null) {
+                logger.debug("Found principal attribute: {}", attr);
+                final String principalAttrName = this.principalAttributeMap.get(ldapAttrName);
+                if (attr.size() > 1) {
+                    attributeMap.put(principalAttrName, attr.getStringValues());
+                } else {
+                    attributeMap.put(principalAttrName, attr.getStringValue());
+                }
+            }
+        }
+        */
+
+        logger.info("return SimplePrincipal.....:" + username);
+        // return new SimplePrincipal(username);
+        return new SimplePrincipal(username, attributeMap);
     }
 
     @PostConstruct
